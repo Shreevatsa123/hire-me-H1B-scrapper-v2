@@ -1,29 +1,19 @@
-# Ignore Python cache
+# Ignore the entire airflow_home folder (contains logs, configs, temp files)
+airflow_home/
+
+# Ignore database files (if you don’t want local DB data to be tracked)
+database/
+airflow_home/database/
+*.db
+
+# Ignore log files
+logs/
+airflow_home/logs/
+
+# Ignore compiled Python files
 __pycache__/
 *.pyc
-*.pyo
 
-# Ignore logs
-logs/
-*.log
-airflow-webserver.out
-airflow-webserver.err
-
-# Ignore virtual environments
-venv/
+# Ignore environment files (if using virtual environments)
 .env
-
-# Ignore Docker-related files
-*.pid
-*.sock
-
-# Ignore Airflow database files
-airflow.db
-airflow.cfg
-
-# Ignore temporary and system files
-.DS_Store
-Thumbs.db
-
-# Ignore Docker Compose overrides (if any)
-docker-compose.override.yml
+venv/
