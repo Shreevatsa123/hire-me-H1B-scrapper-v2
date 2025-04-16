@@ -1,14 +1,37 @@
 # scraper/scraper.py
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime
-from urllib.parse import urljoin, urlencode
-import time
-import logging
-import random
-import yaml
+
+# --- START: Debugging Imports ---
+print("--- scraper.py: Attempting imports ---")
+try:
+    import requests
+    print("--- scraper.py: Imported requests ---")
+    from bs4 import BeautifulSoup
+    print("--- scraper.py: Imported BeautifulSoup ---")
+    from datetime import datetime
+    print("--- scraper.py: Imported datetime ---")
+    from urllib.parse import urljoin, urlencode
+    print("--- scraper.py: Imported urllib.parse ---")
+    import time
+    print("--- scraper.py: Imported time ---")
+    import logging
+    print("--- scraper.py: Imported logging ---")
+    import random
+    print("--- scraper.py: Imported random ---")
+    import yaml
+    print("--- scraper.py: Imported yaml ---")
+    # Explicitly check lxml as it's used by BeautifulSoup
+    import lxml
+    print("--- scraper.py: Imported lxml ---")
+except ImportError as e:
+    print(f"--- scraper.py: FAILED IMPORT: {e} ---")
+    # Re-raise the error so it doesn't proceed silently if an import fails
+    raise e
+print("--- scraper.py: All imports successful ---")
+# --- END: Debugging Imports ---
+
 
 # Configure logging (if not already configured elsewhere)
+# Note: Logging might not be fully configured if 'import logging' failed above
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Delay between requests remains important
@@ -72,6 +95,7 @@ def scrape_site(company_name, base_url, search_path, keywords, location_query, s
             response = requests.get(next_page_url, timeout=20, headers=headers)
             response.raise_for_status()
 
+            # This is where lxml is used by BeautifulSoup
             soup = BeautifulSoup(response.text, "lxml")
 
             job_cards = soup.select(job_card_selector)
@@ -149,9 +173,14 @@ def scrape_site(company_name, base_url, search_path, keywords, location_query, s
         except requests.exceptions.RequestException as e:
             logging.error(f"[{company_name}] Failed to fetch or process {next_page_url}: {e}")
             next_page_url = None
-        except Exception as e:
-             logging.error(f"[{company_name}] An unexpected error occurred during scraping page {current_page}: {e}")
-             next_page_url = None
+        # Catch BeautifulSoup FeatureNotFound error if lxml isn't installed
+        except Exception as e: # Catch other potential errors too
+             # Check if the error is related to the parser
+             if "Couldn't find a suitable parser" in str(e) or isinstance(e, ImportError):
+                 logging.error(f"[{company_name}] CRITICAL PARSER ERROR: Could not initialize BeautifulSoup parser (likely missing 'lxml'). Error: {e}", exc_info=True)
+             else:
+                 logging.error(f"[{company_name}] An unexpected error occurred during scraping page {current_page}: {e}", exc_info=True)
+             next_page_url = None # Stop pagination on error
 
         if next_page_url and current_page < max_pages :
              delay = REQUEST_DELAY_SECONDS + random.uniform(0.5, 2.0)
@@ -210,8 +239,8 @@ def run_configured_scrapers(config_path='/opt/airflow/config/scraper_config.yaml
 
 
         if not base_url or not search_path or not selectors:
-             logging.warning(f"Skipping site '{company}' due to missing base_url, search_path, or selectors in config.")
-             continue
+              logging.warning(f"Skipping site '{company}' due to missing base_url, search_path, or selectors in config.")
+              continue
 
         try: # Add try-except around individual site scraping
             # --- Updated call to scrape_site ---
