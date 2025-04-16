@@ -5,9 +5,8 @@ target_sites:
     base_url: "https://careers.google.com"
     search_path: "/jobs/results/"
     keywords:
-      - data engineer
-      - software engineer
-    location_query: "United States" # Or adjust as needed
+      - Design Engineer
+    location_query: "India" # Or adjust as needed
     selectors:
       # --- Updated Selectors based on your HTML snippet ---
       job_card: "li.lLd3Je"        # The list item containing each job

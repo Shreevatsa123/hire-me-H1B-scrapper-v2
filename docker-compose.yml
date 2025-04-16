@@ -1,5 +1,5 @@
 # Corrected docker-compose.yml
-# Removed user creation from command - will be run manually via exec
+# Added SMTP environment variables to the 'airflow' service
 
 version: '3.8' # Note: Docker Compose V2 ignores this, but it's kept for compatibility/reference
 
@@ -13,13 +13,13 @@ services:
       - "8080:8080"
     volumes:
       # --- Paths relative to your docker-compose.yml file ---
+      - ./scraper:/opt/airflow/scraper
       - ./airflow_home:/opt/airflow/airflow_home
       - ./dags:/opt/airflow/dags
-      - "./database:/opt/airflow/database"
-      - ./scraper:/opt/airflow/scraper
+      - "./database:/opt/airflow/database" # Note: Using SQLite within this volume for SequentialExecutor
       - ./config:/opt/airflow/config
     environment:
-      - PYTHONPATH=/opt/airflow/dags:/opt/airflow/scraper
+      - PYTHONPATH=/opt/airflow
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       # NOTE: Environment variables below might not be used by `airflow users create`
@@ -30,11 +30,23 @@ services:
       # Add Fernet key for connection encryption (recommended)
       # Generate one using: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
       # - AIRFLOW__CORE__FERNET_KEY=YOUR_GENERATED_FERNET_KEY
+
+      # --- SMTP Configuration ---
+      # Replace placeholder values with your actual SMTP provider details
+      # Example uses Gmail settings - remember to use an App Password for Gmail!
+      - AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+      - AIRFLOW__SMTP__SMTP_PORT=587
+      - AIRFLOW__SMTP__SMTP_USER=ratnam2001shree@gmail.com
+      - AIRFLOW__SMTP__SMTP_PASSWORD=hpks ryjb tjbs tvbo # Use App Password for Gmail
+      - AIRFLOW__SMTP__SMTP_MAIL_FROM=airflow-scraper@yourdomain.com # 'From' address
+      - AIRFLOW__SMTP__SMTP_STARTTLS=True # Use 'True' or 'False' (as string or boolean)
+      - AIRFLOW__SMTP__SMTP_SSL=False     # Use 'True' or 'False'
+
     command: >
       bash -c "
         echo 'Setting AIRFLOW_HOME=${AIRFLOW_HOME}' &&
-        echo 'Initializing database...' &&
-        airflow db init &&
+        echo 'Initializing/Upgrading database...' &&
+        airflow db upgrade && # Use upgrade instead of init for idempotency
         echo 'Starting webserver and scheduler...' &&
         exec airflow webserver & exec airflow scheduler
       "
