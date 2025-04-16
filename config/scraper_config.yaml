@@ -7,7 +7,6 @@ target_sites:
     keywords:
       - data engineer
       - software engineer
-      - site reliability engineer
     location_query: "Bengaluru, Karnataka, India" # Or adjust as needed
     selectors:
       # --- Updated Selectors based on your HTML snippet ---
