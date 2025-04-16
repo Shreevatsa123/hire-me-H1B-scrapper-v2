@@ -48,7 +48,7 @@ def store_scraped_data(**kwargs):
             continue
 
         cursor.execute('''
-            INSERT INTO job_postings (date_posting, date_scrapped, job_posting_name, description, link)
+            INSERT OR IGNORE INTO job_postings (date_posting, date_scrapped, job_posting_name, description, link)
             VALUES (?, ?, ?, ?, ?)
         ''', (job['date_posting'], datetime.now().strftime('%Y-%m-%d'), job['job_posting_name'], job['description'], job['link']))
 
