@@ -1,0 +1,29 @@
+target_sites:
+  - company_name: Google
+    base_url: "https://careers.google.com"
+    search_path: "/jobs/results/"
+    keywords:
+      - data engineer
+      - software engineer
+      - site reliability engineer
+    location_query: "Bengaluru, Karnataka, India" # Or adjust as needed
+    selectors:
+      # --- IMPORTANT: Update these selectors based on inspecting the live site ---
+      job_card: "ul li a[href^='/jobs/results/']" # Example selector
+      title: "h2.gcVpJp"                        # Example selector
+      link: "a[href^='/jobs/results/']"           # Example selector
+      next_page: "a[aria-label='Next page']"      # Example selector
+    max_pages: 2 # Number of result pages to scrape
+
+  # - company_name: AnotherCompany # Example for adding more sites later
+  #   base_url: "https://careers.another.com"
+  #   search_path: "/search"
+  #   keywords:
+  #     - data analyst
+  #   location_query: "USA"
+  #   selectors:
+  #     job_card: ".job-listing"
+  #     title: ".job-title"
+  #     link: "a.job-link"
+  #     next_page: "a.next"
+  #   max_pages: 1
