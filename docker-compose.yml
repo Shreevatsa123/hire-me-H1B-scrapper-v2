@@ -1,4 +1,7 @@
-version: '3.8'
+# Corrected docker-compose.yml
+# Removed user creation from command - will be run manually via exec
+
+version: '3.8' # Note: Docker Compose V2 ignores this, but it's kept for compatibility/reference
 
 services:
   airflow:
@@ -9,23 +12,29 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./airflow_home:/opt/airflow
-      - "./database:/opt/airflow/database"  # Mount database directory
+      # --- Paths relative to your docker-compose.yml file ---
+      - ./airflow_home:/opt/airflow/airflow_home
       - ./dags:/opt/airflow/dags
+      - "./database:/opt/airflow/database"
       - ./scraper:/opt/airflow/scraper
+      - ./config:/opt/airflow/config
     environment:
       - PYTHONPATH=/opt/airflow/dags:/opt/airflow/scraper
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # NOTE: Environment variables below might not be used by `airflow users create`
+      # but are kept for potential use by entrypoint scripts or other processes.
       - _AIRFLOW_WWW_USER_USERNAME=admin
       - _AIRFLOW_WWW_USER_PASSWORD=admin
+      - AIRFLOW_HOME=/opt/airflow/airflow_home
+      # Add Fernet key for connection encryption (recommended)
+      # Generate one using: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+      # - AIRFLOW__CORE__FERNET_KEY=YOUR_GENERATED_FERNET_KEY
     command: >
-      bash -c "airflow db init &&
-               airflow users create \
-                 --username admin \
-                 --password admin \
-                 --firstname Admin \
-                 --lastname User \
-                 --role Admin \
-                 --email admin@example.com &&
-               airflow webserver & airflow scheduler"
+      bash -c "
+        echo 'Setting AIRFLOW_HOME=${AIRFLOW_HOME}' &&
+        echo 'Initializing database...' &&
+        airflow db init &&
+        echo 'Starting webserver and scheduler...' &&
+        exec airflow webserver & exec airflow scheduler
+      "

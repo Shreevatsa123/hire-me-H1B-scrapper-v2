@@ -1,62 +1,91 @@
-import json
+# dags/web_scraper.py
+import json # Keep json import for potential future use, though not strictly needed now
 from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 import sys
-sys.path.append('/opt/airflow/scraper')
+import os 
+import logging # Import logging
 
-from scraper import scrape_jobs
+# Configure logging for the DAG file itself
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+scraper_path = '/opt/airflow/scraper' 
+if scraper_path not in sys.path:
+    sys.path.append(scraper_path)
+
+# Import the new wrapper function that reads the config
+try:
+    # This function now handles reading the config file internally
+    from scraper import run_configured_scrapers 
+except ImportError as e:
+     logging.error(f"Error importing run_configured_scrapers from {scraper_path}. Error: {e}", exc_info=True)
+     # Define a dummy function
+     def run_configured_scrapers(**kwargs):
+         logging.error("ERROR: run_configured_scrapers function could not be imported!")
+         raise ImportError("Dummy function called because import failed.")
 
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": datetime(2024, 3, 23),
+    "start_date": datetime(2024, 3, 23), 
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
+    "provide_context": True 
 }
 
-def pass_xcom_to_store(**kwargs):
+def decide_trigger(**kwargs):
     """Decide whether to trigger store_scraped_data DAG based on job availability."""
     ti = kwargs["ti"]
-    scraped_data = ti.xcom_pull(task_ids="scrape_jobs")
-    if scraped_data:
-        return "trigger_store_scraped_data"
-    return "skip_store_scraped_data"
+    # Task ID matches the PythonOperator below
+    scraped_data = ti.xcom_pull(task_ids="run_scrapers_task") 
+    
+    if scraped_data and isinstance(scraped_data, list) and len(scraped_data) > 0:
+        logging.info(f"Found {len(scraped_data)} jobs. Triggering store_scraped_data DAG.")
+        return "trigger_store_scraped_data_task" 
+    else:
+        logging.info("⚠️ No new jobs found by scrapers. Skipping store DAG.")
+        return "skip_store_scraped_data_task" 
 
 with DAG(
-    "web_scraper_dag",
+    "web_scraper_dag", 
     default_args=default_args,
-    schedule_interval="@daily",
+    schedule_interval="@daily", 
     catchup=False,
+    tags=['scraping', 'configurable'], 
 ) as dag:
     
-    scrape_task = PythonOperator(
-        task_id="scrape_jobs",
-        python_callable=scrape_jobs,
-        op_kwargs={"url": "https://careers.google.com"},
-        do_xcom_push=True  # Push data to XCom
+    run_scrapers_task = PythonOperator(
+        # Changed task_id
+        task_id="run_scrapers_task", 
+        # Call the wrapper function that reads the config
+        python_callable=run_configured_scrapers, 
+        # op_kwargs could be used to override the default config path if needed:
+        # op_kwargs={'config_path': '/opt/airflow/custom_config/my_config.json'},
+        do_xcom_push=True  
     )
 
-    pass_xcom_task = BranchPythonOperator(
-        task_id="pass_xcom_to_store",
-        python_callable=pass_xcom_to_store,
-        dag=dag
+    branch_task = BranchPythonOperator(
+        task_id="decide_trigger_task", 
+        python_callable=decide_trigger,
     )
 
     trigger_store_data = TriggerDagRunOperator(
-        task_id="trigger_store_scraped_data",
-        trigger_dag_id="store_scraped_data",
-        conf={"scraped_data": "{{ ti.xcom_pull(task_ids='scrape_jobs') | tojson }}"},
+        task_id="trigger_store_scraped_data_task",
+        trigger_dag_id="store_scraped_data", 
+        # Pull XCom from the correct task
+        conf={"scraped_data": "{{ ti.xcom_pull(task_ids='run_scrapers_task') | tojson }}"},
         wait_for_completion=False,
-        trigger_rule=TriggerRule.ALL_SUCCESS
+        trigger_rule=TriggerRule.ALL_SUCCESS 
     )
 
     skip_store_scraped_data = PythonOperator(
-        task_id="skip_store_scraped_data",
-        python_callable=lambda: print("⚠️ Skipping store DAG as no jobs found."),
-        dag=dag,
+        task_id="skip_store_scraped_data_task",
+        python_callable=lambda: logging.info("Task executed: Skipping store DAG trigger."),
+        trigger_rule=TriggerRule.ALL_SUCCESS 
     )
 
-    scrape_task >> pass_xcom_task >> [trigger_store_data, skip_store_scraped_data]
+    # Define task dependencies
+    run_scrapers_task >> branch_task >> [trigger_store_data, skip_store_scraped_data]

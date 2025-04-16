@@ -1,0 +1,23 @@
+# config/scraper_config.yaml (Partial - update the 'selectors' section)
+
+target_sites:
+  - company_name: Google
+    base_url: "https://careers.google.com"
+    search_path: "/jobs/results/"
+    keywords:
+      - data engineer
+      - software engineer
+      - site reliability engineer
+    location_query: "Bengaluru, Karnataka, India" # Or adjust as needed
+    selectors:
+      # --- Updated Selectors based on your HTML snippet ---
+      job_card: "li.lLd3Je"        # The list item containing each job
+      title: "h3.QJPWVe"           # The H3 tag with the job title
+      link: "a.WpHeLc"             # The anchor tag with the specific job link
+      # --- Next Page Selector - Requires manual inspection ---
+      # Find this by inspecting the 'Next' button/link on the actual page
+      # If no clear link exists, leave it as a placeholder or remove if not needed.
+      next_page: "a[aria-label='Next page']" # Placeholder - UPDATE THIS! 
+    max_pages: 2 
+
+  # - ... other site configurations ...
