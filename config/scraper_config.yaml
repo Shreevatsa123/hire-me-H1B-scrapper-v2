@@ -4,9 +4,6 @@ target_sites:
   - company_name: Google
     base_url: "https://careers.google.com"
     search_path: "/jobs/results/"
-    keywords:
-      - data science intern
-      - data engineer intern
     location_query: "USA"
     selectors:
       job_card: "li.lLd3Je"
@@ -16,27 +13,21 @@ target_sites:
       next_page: "a[aria-label='Go to next page']"
     max_pages: 2
 
-  - company_name: Accenture
-    base_url: "https://www.accenture.com"
-    search_path: "/us-en/careers/jobsearch"
-    keywords:
-      - data science intern
-      - data engineer intern
-    location_query: "USA"
-    selectors:
-      job_card: "div.rad-filters-vertical__job-card-content-wrapper"
-      title: "span.rad-filters-vertical__job-card-content-standard-title-dynamic-text"
-      link: "a.rad-filters-vertical__job-card-content-link-button"
-      location: "span.rad-filter-list-item__text"
-      next_page: "button.rad-pagination__next-arrow"
-    max_pages: 2
+  # - company_name: Accenture
+  #   base_url: "https://www.accenture.com"
+  #   search_path: "/us-en/careers/jobsearch"
+  #   location_query: "USA"
+  #   selectors:
+  #     job_card: "div.rad-filters-vertical__job-card-content-wrapper"
+  #     title: "span.rad-filters-vertical__job-card-content-standard-title-dynamic-text"
+  #     link: "a.rad-filters-vertical__job-card-content-link-button"
+  #     location: "span.rad-filter-list-item__text"
+  #     next_page: "button.rad-pagination__next-arrow"
+  #   max_pages: 2
 
   - company_name: Adobe
     base_url: "https://careers.adobe.com"
     search_path: "/us/en/search-results"
-    keywords:
-      - data science intern
-      - data engineer intern
     location_query: "USA"
     selectors:
       job_card: "div.phw-posn-relative"
@@ -49,9 +40,6 @@ target_sites:
   - company_name: Amazon
     base_url: "https://www.amazon.jobs"
     search_path: "/en/search"
-    keywords:
-      - data science intern
-      - data engineer intern
     location_query: "USA"
     selectors:
       job_card: "div.job-tile"
@@ -61,27 +49,21 @@ target_sites:
       next_page: "button.load-more"
     max_pages: 2
 
-  - company_name: Amgen
-    base_url: "https://careers.amgen.com"
-    search_path: "/en/search-jobs"
-    keywords:
-      - data science intern
-      - data engineer intern
-    location_query: "USA"
-    selectors:
-      job_card: "li"
-      title: "h3"
-      link: "a"
-      location: "span.job-location"
-      next_page: "a.next"
-    max_pages: 2
+  # - company_name: Amgen
+  #   base_url: "https://careers.amgen.com"
+  #   search_path: "/en/search-jobs"
+  #   location_query: "USA"
+  #   selectors:
+  #     job_card: "li"
+  #     title: "h3"
+  #     link: "a"
+  #     location: "span.job-location"
+  #     next_page: "a.next"
+  #   max_pages: 2
 
   - company_name: Apple
     base_url: "https://jobs.apple.com"
     search_path: "/en-us/search"
-    keywords:
-      - data science intern
-      - data engineer intern
     location_query: "USA"
     selectors:
       job_card: "div.job-list-item"

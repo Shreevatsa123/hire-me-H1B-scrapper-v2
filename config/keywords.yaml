@@ -1,0 +1,9 @@
+# config/keywords.yaml
+# A list of job titles to search for across all career sites.
+
+keywords:
+  - "data science intern"
+  - "data engineer intern"
+  - "machine learning intern"
+  - "artifical intelligence intern"
+  - "business intelligence intern"
