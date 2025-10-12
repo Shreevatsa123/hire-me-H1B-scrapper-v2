@@ -36,8 +36,8 @@ services:
       # Example uses Gmail settings - remember to use an App Password for Gmail!
       - AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
       - AIRFLOW__SMTP__SMTP_PORT=587
-      - AIRFLOW__SMTP__SMTP_USER=ratnam2001shree@gmail.com
-      - AIRFLOW__SMTP__SMTP_PASSWORD=hpks ryjb tjbs tvbo # Use App Password for Gmail
+      - AIRFLOW__SMTP__SMTP_USER=s******************@gmail.com
+      - AIRFLOW__SMTP__SMTP_PASSWORD= # Use App Password for Gmail
       - AIRFLOW__SMTP__SMTP_MAIL_FROM=airflow-scraper@yourdomain.com # 'From' address
       - AIRFLOW__SMTP__SMTP_STARTTLS=True # Use 'True' or 'False' (as string or boolean)
       - AIRFLOW__SMTP__SMTP_SSL=False     # Use 'True' or 'False'
@@ -49,4 +49,5 @@ services:
         airflow db upgrade && # Use upgrade instead of init for idempotency
         echo 'Starting webserver and scheduler...' &&
         exec airflow webserver & exec airflow scheduler
+
       "
