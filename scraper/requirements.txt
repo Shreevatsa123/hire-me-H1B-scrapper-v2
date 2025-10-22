@@ -1,10 +1,6 @@
-# scraper/requirements.txt
-
-requests>=2.25.0 # For making HTTP requests
-beautifulsoup4>=4.9.0 # For parsing HTML
-lxml>=4.6.0 # Faster HTML parser, used by BeautifulSoup
-PyYAML>=5.4 # For parsing YAML configuration files <-- ADD THIS LINE
-
-# Add other dependencies your project uses below
-# Example: pandas (if used in store_scraped_data DAG)
-# pandas>=1.2.0
+requests>=2.25.0
+beautifulsoup4>=4.9.0
+lxml>=4.6.0
+PyYAML>=5.4
+selenium>=4.0.0
+webdriver-manager>=3.5.2

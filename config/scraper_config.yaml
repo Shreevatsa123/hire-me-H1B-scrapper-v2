@@ -1,22 +1,74 @@
-# config/scraper_config.yaml (Partial - update the 'selectors' section)
+# config/scraper_config.yaml
 
 target_sites:
   - company_name: Google
     base_url: "https://careers.google.com"
     search_path: "/jobs/results/"
-    keywords:
-      - Design Engineer
-    location_query: "India" # Or adjust as needed
+    location_query: "USA"
     selectors:
-      # --- Updated Selectors based on your HTML snippet ---
-      job_card: "li.lLd3Je"        # The list item containing each job
-      title: "h3.QJPWVe"           # The H3 tag with the job title
-      link: "a.WpHeLc"             # The anchor tag with the specific job link
+      job_card: "li.lLd3Je"
+      title: "h3.QJPWVe"
+      link: "a.WpHeLc"
       location: "span.r0wTof"
-      # --- Next Page Selector - Requires manual inspection ---
-      # Find this by inspecting the 'Next' button/link on the actual page
-      # If no clear link exists, leave it as a placeholder or remove if not needed.
-      next_page: "a[aria-label='Next page']" # Placeholder - UPDATE THIS! 
-    max_pages: 2 
+      next_page: "a[aria-label='Go to next page']"
+    max_pages: 2
 
-  # - ... other site configurations ...
+  # - company_name: Accenture
+  #   base_url: "https://www.accenture.com"
+  #   search_path: "/us-en/careers/jobsearch"
+  #   location_query: "USA"
+  #   selectors:
+  #     job_card: "div.rad-filters-vertical__job-card-content-wrapper"
+  #     title: "span.rad-filters-vertical__job-card-content-standard-title-dynamic-text"
+  #     link: "a.rad-filters-vertical__job-card-content-link-button"
+  #     location: "span.rad-filter-list-item__text"
+  #     next_page: "button.rad-pagination__next-arrow"
+  #   max_pages: 2
+
+  - company_name: Adobe
+    base_url: "https://careers.adobe.com"
+    search_path: "/us/en/search-results"
+    location_query: "USA"
+    selectors:
+      job_card: "div.phw-posn-relative"
+      title: "a[data-ph-at-id='job-link']"
+      link: "a[data-ph-at-id='job-link']"
+      location: "span.job-location"
+      next_page: "a[data-ph-at-id='pagination-next-link']"
+    max_pages: 2
+
+  - company_name: Amazon
+    base_url: "https://www.amazon.jobs"
+    search_path: "/en/search"
+    location_query: "USA"
+    selectors:
+      job_card: "div.job-tile"
+      title: "h3.job-title"
+      link: "a.job-link"
+      location: "li.text-nowrap"
+      next_page: "button.load-more"
+    max_pages: 2
+
+  # - company_name: Amgen
+  #   base_url: "https://careers.amgen.com"
+  #   search_path: "/en/search-jobs"
+  #   location_query: "USA"
+  #   selectors:
+  #     job_card: "li"
+  #     title: "h3"
+  #     link: "a"
+  #     location: "span.job-location"
+  #     next_page: "a.next"
+  #   max_pages: 2
+
+  - company_name: Apple
+    base_url: "https://jobs.apple.com"
+    search_path: "/en-us/search"
+    location_query: "USA"
+    selectors:
+      job_card: "div.job-list-item"
+      title: "h3 > a.link-inline"
+      link: "a.link-inline"
+      location: "span.table--advanced-search__location-sub"
+      next_page: "button[aria-label='Next Page']"
+    max_pages: 2

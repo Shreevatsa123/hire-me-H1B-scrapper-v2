@@ -1,0 +1,14 @@
+# config/keywords.yaml
+# Define the roles and the required job levels to search for.
+
+roles:
+  - "data engineer"
+  - "data scientist"
+  - "machine learning engineer"
+  - "artifical intelligence engineer"
+  - "business intelligence"
+
+levels:
+  - "intern"
+  - "internship"
+  - "co-op"
