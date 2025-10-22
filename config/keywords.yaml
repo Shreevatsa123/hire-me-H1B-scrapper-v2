@@ -1,9 +1,14 @@
 # config/keywords.yaml
-# A list of job titles to search for across all career sites.
+# Define the roles and the required job levels to search for.
 
-keywords:
-  - "data science intern"
-  - "data engineer intern"
-  - "machine learning intern"
-  - "artifical intelligence intern"
-  - "business intelligence intern"
+roles:
+  - "data engineer"
+  - "data scientist"
+  - "machine learning engineer"
+  - "artifical intelligence engineer"
+  - "business intelligence"
+
+levels:
+  - "intern"
+  - "internship"
+  - "co-op"
